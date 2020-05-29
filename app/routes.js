@@ -36,5 +36,9 @@ module.exports = function (app) {
         .get(class_section.ListClassSection);
     app.route('/classes/kelas_section/:id')
         .get(class_section.GetClassSectionById);
+    app.route('/classes/kelas_section')
+        .put(class_section.InsertClassSection);
+    app.route('/classes/kelas_section')
+        .post(class_section.UpdateClassSection);
 
 };

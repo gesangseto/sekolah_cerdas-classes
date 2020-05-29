@@ -45,8 +45,8 @@ exports.successGet = function (time, messages, total, datasets, res) {
         'total': total,
         'data': datasets
     };
-    console.log("response : Ok ");
-    // console.log(data);
+    console.log("response :");
+    console.log(data);
     res.json(data);
     res.end();
 };

@@ -15,9 +15,13 @@ var elapseTime = "";
 
 exports.ListSubClass = function (req, res) {
     perf.start();
+    console.log("date-time :" + new Date())
+    console.log("api-name : " + req.originalUrl)
+    console.log("body-sent : ")
+    console.log(req.body)
+
     var total = 0;
     var sql = `SELECT * FROM sections`
-    console.log(sql)
     connection.query(sql, function (error, result, fields) {
         if (error) {
             messages = "Internal server error";
@@ -38,6 +42,11 @@ exports.ListSubClass = function (req, res) {
 
 exports.GetSubClassById = function (req, res) {
     perf.start();
+    console.log("date-time :" + new Date())
+    console.log("api-name : " + req.originalUrl)
+    console.log("body-sent : ")
+    console.log(req.body)
+
     var total = 0;
     connection.query("SELECT session_id FROM `sch_settings` ;",
         function (error, result, fields) {
@@ -65,6 +74,11 @@ exports.GetSubClassById = function (req, res) {
 
 exports.InsertSubClass = function (req, res) {
     perf.start();
+    console.log("date-time :" + new Date())
+    console.log("api-name : " + req.originalUrl)
+    console.log("body-sent : ")
+    console.log(req.body)
+
     var total = 0;
     var body = req.body
     var values = []
@@ -107,6 +121,11 @@ exports.InsertSubClass = function (req, res) {
 
 exports.UpdateSubClass = function (req, res) {
     perf.start();
+    console.log("date-time :" + new Date())
+    console.log("api-name : " + req.originalUrl)
+    console.log("body-sent : ")
+    console.log(req.body)
+
     var total = 0;
     var body = req.body
     var values = []
@@ -155,6 +174,11 @@ exports.UpdateSubClass = function (req, res) {
 };
 exports.DeleteSubClass = function (req, res) {
     perf.start();
+    console.log("date-time :" + new Date())
+    console.log("api-name : " + req.originalUrl)
+    console.log("body-sent : ")
+    console.log(req.body)
+
     var total = 0;
     var id = req.params.id
     connection.query("DELETE FROM sections WHERE id=?", [id], function (error, result, fields) {

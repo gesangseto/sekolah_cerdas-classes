@@ -15,6 +15,11 @@ var elapseTime = "";
 
 exports.ListClassSection = function (req, res) {
     perf.start();
+    console.log("date-time :" + new Date())
+    console.log("api-name : " + req.originalUrl)
+    console.log("body-sent : ")
+    console.log(req.body)
+
     var total = 0;
     var sql = `SELECT a.id as class_section_id,a.*,b.class as class,c.section as sub_class, b.id as class_id,c.id as sub_class_id
     FROM class_sections as a
@@ -49,6 +54,11 @@ exports.ListClassSection = function (req, res) {
 
 exports.GetClassSectionById = function (req, res) {
     perf.start();
+    console.log("date-time :" + new Date())
+    console.log("api-name : " + req.originalUrl)
+    console.log("body-sent : ")
+    console.log(req.body)
+
     var total = 0;
     connection.query(`SELECT a.id as class_section_id,a.*,b.class as class,c.section as sub_class, b.id as class_id,c.id as sub_class_id
     FROM class_sections as a
@@ -76,3 +86,103 @@ exports.GetClassSectionById = function (req, res) {
 
 
 
+
+exports.InsertClassSection = function (req, res) {
+    perf.start();
+    console.log("date-time :" + new Date())
+    console.log("api-name : " + req.originalUrl)
+    console.log("body-sent : ")
+    console.log(req.body)
+
+    var total = 0;
+    if (req.body['class'] == undefined || req.body.data == undefined) {
+        messages = "Failed insert data, data must fill";
+        elapseTime = perf.stop();
+        elapseTime = elapseTime.time.toFixed(2);
+        response.successPost(elapseTime, messages, res);
+    } else {
+        connection.query("SELECT count(id) as count FROM classes WHERE class=?", [req.body['class']],
+            function (error, result, fields) {
+                if (result[0].count > 0) {
+                    messages = "Failed insert data, class already exists";
+                    elapseTime = perf.stop();
+                    elapseTime = elapseTime.time.toFixed(2);
+                    response.successPost(elapseTime, messages, res);
+                    return;
+                } else {
+                    connection.query("SELECT MAX(id) as id FROM classes",
+                        function (error, result, fields) {
+                            var class_id = result[0]['id'] + 1
+                            connection.query("INSERT INTO classes (`id`,`class`) VALUES (?,?)", [class_id, req.body['class']],
+                                function (error, result, fields) {
+                                    req.body.data.forEach(element => {
+                                        connection.query("INSERT INTO `class_sections`(`id`, `class_id`, `section_id`) SELECT MAX(id) + 1,?,? FROM class_sections",
+                                            [class_id, element.section_id],
+                                            function (error, result, fields) {
+                                                messages = "Success Update data";
+                                                // console.log(messages)
+                                            });
+
+                                    });
+                                });
+
+                        });
+                    messages = "Success insert class";
+                    elapseTime = perf.stop();
+                    elapseTime = elapseTime.time.toFixed(2);
+                    response.successPost(elapseTime, messages, res);
+                    return;
+                }
+            });
+
+    }
+};
+
+
+
+exports.UpdateClassSection = function (req, res) {
+    perf.start();
+    console.log("date-time :" + new Date())
+    console.log("api-name : " + req.originalUrl)
+    console.log("body-sent : ")
+    console.log(req.body)
+
+    var total = 0;
+    if (req.body['class_id'] == undefined || req.body['class'] == undefined || req.body.data == undefined) {
+        messages = "Failed insert data, data must fill";
+        elapseTime = perf.stop();
+        elapseTime = elapseTime.time.toFixed(2);
+        response.successPost(elapseTime, messages, res);
+    } else {
+        connection.query("SELECT count(id) as count FROM classes WHERE class=? AND id!=?", [req.body['class'], req.body['class_id']],
+            function (error, result, fields) {
+                if (result[0].count > 0) {
+                    messages = "Failed insert data, class already exists";
+                    elapseTime = perf.stop();
+                    elapseTime = elapseTime.time.toFixed(2);
+                    response.successPost(elapseTime, messages, res);
+                    return
+                } else {
+                    connection.query("UPDATE `classes` SET `class`=? WHERE id=?", [req.body['class'], req.body['class_id']],
+                        function (error, result, fields) {
+                        });
+                    req.body.data.forEach(element => {
+                        connection.query("DELETE FROM `class_sections` WHERE class_id=? AND section_id=?", [req.body['class_id'], element['section_id']],
+                            function (error, result, fields) {
+                                connection.query("INSERT INTO`class_sections`(`id`, `class_id`, `section_id`) SELECT MAX(id) + 1,?,? FROM class_sections",
+                                    [req.body.class_id, element.section_id],
+                                    function (error, result, fields) {
+                                        messages = "Success Update data";
+                                        // console.log(messages)
+                                    });
+                            });
+                    });
+                    messages = "Success Update data";
+                    elapseTime = perf.stop();
+                    elapseTime = elapseTime.time.toFixed(2);
+                    response.successPost(elapseTime, messages, res);
+                }
+            });
+
+    }
+};
